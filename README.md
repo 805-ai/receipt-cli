@@ -1,19 +1,19 @@
 # receipt-cli-eth
 
-**Sign receipts. 0.0001 ETH. No KYC. Self-custody.**
+**Sign receipts. Free. No middleman.**
 
 ```bash
-npx receipt-cli-eth sign "Abraham built this" --key YOUR_KEY --out receipt.json
+npx receipt-cli-eth sign "Abraham built this" --key YOUR_KEY
 npx receipt-cli-eth verify receipt.json
 ```
 
 ## What is this?
 
-Every sign costs 0.0001 ETH. That's it.
+Cryptographic receipts. That's it.
 - You sign a message
-- You pay the fee
-- You get a cryptographic receipt
+- You get a verifiable receipt
 - Anyone can verify it
+- **Free.**
 
 ## Install
 
@@ -25,13 +25,7 @@ npm install -g receipt-cli-eth
 
 ### Sign a message
 ```bash
-receipt-cli sign "Your message here" --key YOUR_PRIVATE_KEY --out receipt.json
-```
-
-Or use an environment variable:
-```bash
-export RECEIPT_KEY=YOUR_PRIVATE_KEY
-receipt-cli sign "Your message here"
+receipt-cli sign "Your message here" --key YOUR_PRIVATE_KEY
 ```
 
 ### Verify a receipt
@@ -40,28 +34,18 @@ receipt-cli verify receipt.json
 ```
 
 ### Options
-- `--key, -k`: Your Ethereum private key
+- `--key, -k`: Your Ethereum private key (or set RECEIPT_KEY env)
 - `--out, -o`: Output file (default: receipt.json)
-- `--rpc`: RPC endpoint (default: Infura mainnet)
-- `--no-pay`: Skip payment (testnet mode)
-
-## How it works
-
-1. Your message + timestamp + signer address = payload
-2. Payload is signed with your Ethereum key
-3. 0.0001 ETH is sent to the treasury
-4. Transaction hash is recorded in the receipt
-5. Anyone can verify the signature mathematically
+- `--pay`: Optional tip (0.0001 ETH) to support development
 
 ## Receipt format
 
 ```json
 {
   "message": "Abraham built this",
-  "timestamp": "2024-12-24T00:00:00.000Z",
+  "timestamp": "2024-12-25T00:00:00.000Z",
   "signer": "0x...",
-  "signature": "0x...",
-  "payment": "0x..."
+  "signature": "0x..."
 }
 ```
 

@@ -6,34 +6,35 @@ const fs = require('fs');
 const FEE = '0.0001';
 const TREASURY = '0xBE4Bd478dB758AA9b2aA8181e764d854940c16C7'; // FinalBoss
 
-program.name('receipt-cli').description('Sign receipts. Pay 0.0001 ETH. No middleman.').version('1.0.0');
+program.name('receipt-cli').description('Sign receipts. Free. No middleman.').version('1.0.2');
 
-program.command('sign <message>').description('Sign a message, create receipt, pay fee')
+program.command('sign <message>').description('Sign a message, create receipt')
   .option('-k, --key <key>', 'Private key (or set RECEIPT_KEY env)')
   .option('-o, --out <file>', 'Output file', 'receipt.json')
+  .option('--pay', 'Optional: send 0.0001 ETH tip to support development')
   .option('--rpc <url>', 'RPC endpoint', 'https://mainnet.infura.io/v3/YOUR_KEY')
-  .option('--no-pay', 'Skip payment (testnet mode)')
   .action(async (message, opts) => {
     const key = opts.key || process.env.RECEIPT_KEY;
     if (!key) { console.error('No key. Use --key or set RECEIPT_KEY'); process.exit(1); }
 
-    const provider = new ethers.providers.JsonRpcProvider(opts.rpc);
-    const wallet = new ethers.Wallet(key, provider);
+    const wallet = new ethers.Wallet(key);
     const timestamp = new Date().toISOString();
     const payload = JSON.stringify({ message, timestamp, signer: wallet.address });
     const signature = await wallet.signMessage(payload);
 
     let txHash = null;
-    if (opts.pay !== false) {
-      console.log(`Paying ${FEE} ETH...`);
-      const tx = await wallet.sendTransaction({ to: TREASURY, value: ethers.utils.parseEther(FEE) });
+    if (opts.pay) {
+      const provider = new ethers.providers.JsonRpcProvider(opts.rpc);
+      const connectedWallet = wallet.connect(provider);
+      console.log(`Sending ${FEE} ETH tip...`);
+      const tx = await connectedWallet.sendTransaction({ to: TREASURY, value: ethers.utils.parseEther(FEE) });
       txHash = tx.hash;
-      console.log(`Paid: ${txHash}`);
+      console.log(`Thanks! Tx: ${txHash}`);
     }
 
     const receipt = { message, timestamp, signer: wallet.address, signature, payment: txHash };
     fs.writeFileSync(opts.out, JSON.stringify(receipt, null, 2));
-    console.log(`Receipt saved: ${opts.out}`);
+    console.log(`✓ Receipt saved: ${opts.out}`);
   });
 
 program.command('verify <file>').description('Verify a receipt signature')

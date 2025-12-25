@@ -3,7 +3,7 @@
 **Sign receipts. Free. No middleman.**
 
 ```bash
-npx receipt-cli-eth sign "Abraham built this" --key YOUR_KEY
+npx receipt-cli-eth sign "Final Boss built this" --key YOUR_KEY
 npx receipt-cli-eth verify receipt.json
 ```
 
@@ -42,7 +42,7 @@ receipt-cli verify receipt.json
 
 ```json
 {
-  "message": "Abraham built this",
+  "message": "Final Boss built this",
   "timestamp": "2024-12-25T00:00:00.000Z",
   "signer": "0x...",
   "signature": "0x..."

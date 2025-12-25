@@ -97,4 +97,12 @@ const result = verify(receipt);
 
 ## License
 
-MIT - Built by FinalBoss
+MIT - Built by [Final Boss Technology, Inc.](https://finalbosstech.com)
+
+## Patent Notice
+
+**Patent Pending:** US 63/926,683, US 63/917,247, and related applications.
+
+The cryptographic receipt architecture implemented in this software is protected by pending patent applications assigned to Final Boss Technology, Inc.
+
+© 2025 Final Boss Technology, Inc. All rights reserved.

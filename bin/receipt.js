@@ -4,7 +4,7 @@ const { ethers } = require('ethers');
 const fs = require('fs');
 
 const FEE = '0.0001';
-const TREASURY = '0x742d35Cc6634C0532925a3b844Bc9e7595f5bD21'; // YOUR WALLET
+const TREASURY = '0xBE4Bd478dB758AA9b2aA8181e764d854940c16C7'; // FinalBoss
 
 program.name('receipt-cli').description('Sign receipts. Pay 0.0001 ETH. No middleman.').version('1.0.0');
 

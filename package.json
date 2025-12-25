@@ -1,5 +1,5 @@
 {
-  "name": "@finalboss/receipt-cli",
+  "name": "receipt-cli-eth",
   "version": "1.0.0",
   "description": "Sign receipts. 0.0001 ETH. No KYC. Self-custody.",
   "bin": {

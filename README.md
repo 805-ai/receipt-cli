@@ -1,10 +1,10 @@
-# receipt-cli
+# receipt-cli-eth
 
 **Sign receipts. 0.0001 ETH. No KYC. Self-custody.**
 
 ```bash
-npx @finalboss/receipt-cli sign "Abraham built this" --key YOUR_KEY --out receipt.json
-npx @finalboss/receipt-cli verify receipt.json
+npx receipt-cli-eth sign "Abraham built this" --key YOUR_KEY --out receipt.json
+npx receipt-cli-eth verify receipt.json
 ```
 
 ## What is this?
@@ -18,7 +18,7 @@ Every sign costs 0.0001 ETH. That's it.
 ## Install
 
 ```bash
-npm install -g @finalboss/receipt-cli
+npm install -g receipt-cli-eth
 ```
 
 ## Usage

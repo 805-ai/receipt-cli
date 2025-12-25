@@ -3,17 +3,45 @@
 **Sign receipts. Free. No middleman.**
 
 ```bash
-npx receipt-cli-eth sign "Final Boss built this" --key YOUR_KEY
+npx receipt-cli-eth sign "Final Boss built this" --out receipt.json
 npx receipt-cli-eth verify receipt.json
 ```
 
-## What is this?
+## Key Handling (IMPORTANT)
 
-Cryptographic receipts. That's it.
-- You sign a message
-- You get a verifiable receipt
-- Anyone can verify it
-- **Free.**
+Do **NOT** pass private keys on the command line unless you understand the risks:
+- Shell history
+- CI logs  
+- Process list
+
+### Recommended: Environment Variable
+
+**macOS/Linux:**
+```bash
+export RECEIPT_KEY="0xYOUR_PRIVATE_KEY"
+npx receipt-cli-eth sign "Final Boss built this" --out receipt.json
+```
+
+**Windows PowerShell:**
+```powershell
+$env:RECEIPT_KEY="0xYOUR_PRIVATE_KEY"
+npx receipt-cli-eth sign "Final Boss built this" --out receipt.json
+```
+
+### CI-safe: stdin
+```bash
+printf "%s" "$RECEIPT_KEY" | npx receipt-cli-eth sign "message" --key-stdin --out receipt.json
+```
+
+### File-based
+```bash
+npx receipt-cli-eth sign "message" --key-file ~/.receipt/key --out receipt.json
+```
+
+### Legacy (discouraged)
+```bash
+npx receipt-cli-eth sign "message" --key 0xYOUR_PRIVATE_KEY --out receipt.json
+```
 
 ## Install
 
@@ -25,20 +53,25 @@ npm install -g receipt-cli-eth
 
 ### Sign a message
 ```bash
-receipt-cli sign "Your message here" --key YOUR_PRIVATE_KEY
+receipt-cli-eth sign "Your message here" --out receipt.json
 ```
 
 ### Verify a receipt
 ```bash
-receipt-cli verify receipt.json
+receipt-cli-eth verify receipt.json
 ```
 
-### Options
-- `--key, -k`: Your Ethereum private key (or set RECEIPT_KEY env)
-- `--out, -o`: Output file (default: receipt.json)
-- `--pay`: Optional tip (0.0001 ETH) to support development
+## Options
 
-## Receipt format
+| Option | Description |
+|--------|-------------|
+| `--key, -k` | Private key (DISCOURAGED - prefer RECEIPT_KEY env) |
+| `--key-stdin` | Read key from stdin (CI-safe) |
+| `--key-file <path>` | Read key from file |
+| `--out, -o` | Output file (default: receipt.json) |
+| `--pay` | Optional tip (0.0001 ETH) to support development |
+
+## Receipt Format
 
 ```json
 {
@@ -49,10 +82,19 @@ receipt-cli verify receipt.json
 }
 ```
 
+## SDK
+
+For programmatic use:
+```bash
+npm install receipt-sdk
+```
+
+```javascript
+const { quickSign, verify } = require('receipt-sdk');
+const receipt = await quickSign('message', privateKey);
+const result = verify(receipt);
+```
+
 ## License
 
-MIT
-
----
-
-Built by [FinalBoss](https://finalbosstech.com)
+MIT - Built by FinalBoss

@@ -34,7 +34,12 @@ program.command('sign <message>').description('Sign a message, create receipt')
     } else if (opts.keyStdin) {
       key = await readStdin();
     } else {
-      key = opts.key || process.env.RECEIPT_KEY;
+      if (opts.key) {
+        console.warn('⚠️  WARNING: --key may leak secrets via shell history. Prefer RECEIPT_KEY env var.');
+        key = opts.key;
+      } else {
+        key = process.env.RECEIPT_KEY;
+      }
     }
 
     if (!key) {

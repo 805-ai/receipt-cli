@@ -1,11 +1,19 @@
 {
   "name": "receipt-cli-eth",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Sign receipts. 0.0001 ETH. No KYC. Self-custody.",
   "bin": {
     "receipt-cli": "./bin/receipt.js"
   },
-  "keywords": ["receipt", "ethereum", "signature", "cli", "crypto", "ai", "governance"],
+  "keywords": [
+    "receipt",
+    "ethereum",
+    "signature",
+    "cli",
+    "crypto",
+    "ai",
+    "governance"
+  ],
   "author": "FinalBoss <abraham@finalbosstech.com>",
   "license": "MIT",
   "repository": {

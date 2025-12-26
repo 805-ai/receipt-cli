@@ -1,18 +1,28 @@
 # receipt-cli-eth
 
-**Sign receipts. Free. No middleman.**
+**Sign cryptographic receipts. Free. No middleman.**
+
+Signing is free. The `--pay` flag optionally sends a 0.0001 ETH tip to support development.
 
 ```bash
 npx receipt-cli-eth sign "Final Boss built this" --out receipt.json
 npx receipt-cli-eth verify receipt.json
 ```
 
+## Project Names
+
+| Name | What |
+|------|------|
+| **GitHub repo** | [805-ai/receipt-cli](https://github.com/805-ai/receipt-cli) |
+| **npm package / CLI** | `receipt-cli-eth` |
+| **SDK** | `receipt-sdk` |
+
 ## Key Handling (IMPORTANT)
 
 Do **NOT** pass private keys on the command line unless you understand the risks:
-- Shell history
-- CI logs  
-- Process list
+- Shell history exposure
+- CI logs leaking secrets
+- Process list visibility
 
 ### Recommended: Environment Variable
 
@@ -29,16 +39,27 @@ npx receipt-cli-eth sign "Final Boss built this" --out receipt.json
 ```
 
 ### CI-safe: stdin
+
+**macOS/Linux:**
 ```bash
 printf "%s" "$RECEIPT_KEY" | npx receipt-cli-eth sign "message" --key-stdin --out receipt.json
 ```
 
+**Windows PowerShell:**
+```powershell
+echo $env:RECEIPT_KEY | npx receipt-cli-eth sign "message" --key-stdin --out receipt.json
+```
+
 ### File-based
+
 ```bash
 npx receipt-cli-eth sign "message" --key-file ~/.receipt/key --out receipt.json
 ```
 
+Ensure key file is `chmod 600` (owner read/write only) on Unix systems.
+
 ### Legacy (discouraged)
+
 ```bash
 npx receipt-cli-eth sign "message" --key 0xYOUR_PRIVATE_KEY --out receipt.json
 ```
@@ -52,11 +73,13 @@ npm install -g receipt-cli-eth
 ## Usage
 
 ### Sign a message
+
 ```bash
 receipt-cli-eth sign "Your message here" --out receipt.json
 ```
 
 ### Verify a receipt
+
 ```bash
 receipt-cli-eth verify receipt.json
 ```
@@ -73,18 +96,37 @@ receipt-cli-eth verify receipt.json
 
 ## Receipt Format
 
+**Signing scheme:** EIP-191 `personal_sign`
+**Version:** 1
+
 ```json
 {
   "message": "Final Boss built this",
-  "timestamp": "2025-12-25T00:00:00.000Z",
+  "timestamp": "2025-12-25T12:00:00.000Z",
   "signer": "0x...",
   "signature": "0x..."
 }
 ```
 
+The signature covers `JSON.stringify({ message, timestamp, signer })`.
+
+## Verify Behavior
+
+| Condition | Exit Code | Output |
+|-----------|-----------|--------|
+| Valid signature | `0` | Prints signer address, message, timestamp |
+| Invalid signature | `1` | Prints "INVALID - signature mismatch" |
+| Malformed receipt | `1` | Error message |
+
+Use in CI:
+```bash
+npx receipt-cli-eth verify receipt.json && echo "Valid" || echo "Invalid"
+```
+
 ## SDK
 
 For programmatic use:
+
 ```bash
 npm install receipt-sdk
 ```
@@ -105,4 +147,4 @@ MIT - Built by [Final Boss Technology, Inc.](https://finalbosstech.com)
 
 The cryptographic receipt architecture implemented in this software is protected by pending patent applications assigned to Final Boss Technology, Inc.
 
-© 2025 Final Boss Technology, Inc. All rights reserved.
+(c) 2025 Final Boss Technology, Inc. All rights reserved.

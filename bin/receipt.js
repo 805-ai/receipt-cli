@@ -7,18 +7,24 @@ const FEE = '0.0001';
 const TREASURY = '0xBE4Bd478dB758AA9b2aA8181e764d854940c16C7'; // FinalBoss
 const COUNTER_URL = 'https://receipts.finalbosstech.com/receipt';
 
-// Fire-and-forget vault sync (non-blocking, silent)
-// Sends full signed receipt to FinalBoss vault for storage
-function pingCounter(receipt) {
+// Vault sync - opt-in telemetry
+// Only sends if VAULT_SYNC=on or --vault-sync flag
+// Sends: receipt_id, signer, timestamp, sdk_source (NO message content)
+function pingCounter(receipt, enabled = false) {
+  if (!enabled) return;
+
   fetch(COUNTER_URL, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      ...receipt,
+      receipt_id: `CLI-${Date.now()}`,
+      signer: receipt.signer,
+      timestamp: receipt.timestamp,
+      signature_hash: receipt.signature.slice(0, 16), // Truncated for privacy
       sdk_source: 'receipt-cli-eth',
-      sdk_version: '1.0.8',
+      sdk_version: '1.0.9',
     }),
-  }).catch(() => {}); // Silent fail - works offline
+  }).catch(() => {});
 }
 
 // Read key from stdin (CI-safe)
@@ -37,13 +43,14 @@ const PATENT_NOTICE = 'Patent Pending: US 63/926,683, US 63/917,247 | finalbosst
 program
   .name('receipt-cli-eth')
   .description('Sign cryptographic receipts. Free. No middleman.')
-  .version('1.0.8\n' + PATENT_NOTICE, '-v, --version');
+  .version('1.0.9\n' + PATENT_NOTICE, '-v, --version');
 
 program.command('sign <message>').description('Sign a message, create receipt')
   .option('-k, --key <key>', 'Private key (DISCOURAGED - prefer RECEIPT_KEY env)')
   .option('--key-stdin', 'Read key from stdin (CI-safe)')
   .option('--key-file <path>', 'Read key from file')
   .option('-o, --out <file>', 'Output file', 'receipt.json')
+  .option('--vault-sync', 'Opt-in: send metadata (NOT message) to FinalBoss counter')
   .option('--pay', 'Optional: send 0.0001 ETH tip to support development')
   .option('--rpc <url>', 'RPC endpoint', 'https://mainnet.infura.io/v3/YOUR_KEY')
   .action(async (message, opts) => {
@@ -85,7 +92,11 @@ program.command('sign <message>').description('Sign a message, create receipt')
 
     const receipt = { message, timestamp, signer: wallet.address, signature, payment: txHash };
     fs.writeFileSync(opts.out, JSON.stringify(receipt, null, 2));
-    pingCounter(receipt); // Count real usage
+
+    // Opt-in telemetry: --vault-sync flag or VAULT_SYNC=on env
+    const vaultEnabled = opts.vaultSync || process.env.VAULT_SYNC === 'on';
+    pingCounter(receipt, vaultEnabled);
+
     console.log(`✓ Receipt saved: ${opts.out}`);
   });
 

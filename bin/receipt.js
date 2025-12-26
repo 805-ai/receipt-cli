@@ -32,7 +32,12 @@ async function readStdin() {
   });
 }
 
-program.name('receipt-cli-eth').description('Sign receipts. Free. No middleman.').version('1.0.4');
+const PATENT_NOTICE = 'Patent Pending: US 63/926,683, US 63/917,247 | finalbosstech.com';
+
+program
+  .name('receipt-cli-eth')
+  .description('Sign cryptographic receipts. Free. No middleman.')
+  .version('1.0.7\n' + PATENT_NOTICE, '-v, --version');
 
 program.command('sign <message>').description('Sign a message, create receipt')
   .option('-k, --key <key>', 'Private key (DISCOURAGED - prefer RECEIPT_KEY env)')

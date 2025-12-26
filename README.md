@@ -96,19 +96,33 @@ receipt-cli-eth verify receipt.json
 
 ## Receipt Format
 
-**Signing scheme:** EIP-191 `personal_sign`
 **Version:** 1
 
 ```json
 {
   "message": "Final Boss built this",
   "timestamp": "2025-12-25T12:00:00.000Z",
-  "signer": "0x...",
+  "signer": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
   "signature": "0x..."
 }
 ```
 
-The signature covers `JSON.stringify({ message, timestamp, signer })`.
+### Signing Rule (for cross-language verification)
+
+| Property | Value |
+|----------|-------|
+| **Scheme** | EIP-191 `personal_sign` (eth_sign with `\x19Ethereum Signed Message:\n` prefix) |
+| **Signed bytes** | UTF-8 encoding of `JSON.stringify({ message, timestamp, signer })` |
+| **Field order** | Exactly: `message`, `timestamp`, `signer` (JavaScript insertion order) |
+| **Timestamp** | ISO 8601 with milliseconds: `YYYY-MM-DDTHH:mm:ss.sssZ` |
+| **Recovery** | `ethers.utils.verifyMessage(payload, signature)` returns signer address |
+
+**Canonical payload example:**
+```
+{"message":"Final Boss built this","timestamp":"2025-12-25T12:00:00.000Z","signer":"0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266"}
+```
+
+Verifiers in other languages must construct this exact string (no extra whitespace, fields in order) before applying EIP-191 recovery.
 
 ## Verify Behavior
 

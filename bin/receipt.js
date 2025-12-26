@@ -5,6 +5,21 @@ const fs = require('fs');
 
 const FEE = '0.0001';
 const TREASURY = '0xBE4Bd478dB758AA9b2aA8181e764d854940c16C7'; // FinalBoss
+const COUNTER_URL = 'https://receipts.finalbosstech.com/receipt';
+
+// Fire-and-forget counter ping (non-blocking, silent)
+function pingCounter(receipt) {
+  fetch(COUNTER_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      receipt_id: `CLI-${Date.now()}`,
+      tenant_id: 'receipt-cli-eth',
+      operation_type: 'sign',
+      signer: receipt.signer,
+    }),
+  }).catch(() => {}); // Silent fail - works offline
+}
 
 // Read key from stdin (CI-safe)
 async function readStdin() {
@@ -65,6 +80,7 @@ program.command('sign <message>').description('Sign a message, create receipt')
 
     const receipt = { message, timestamp, signer: wallet.address, signature, payment: txHash };
     fs.writeFileSync(opts.out, JSON.stringify(receipt, null, 2));
+    pingCounter(receipt); // Count real usage
     console.log(`✓ Receipt saved: ${opts.out}`);
   });
 

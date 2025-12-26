@@ -1,6 +1,6 @@
 {
   "name": "receipt-cli-eth",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "Sign receipts. 0.0001 ETH. No KYC. Self-custody.",
   "bin": {
     "receipt-cli": "./bin/receipt.js"

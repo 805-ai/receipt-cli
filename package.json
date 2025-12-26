@@ -1,6 +1,6 @@
 {
   "name": "receipt-cli-eth",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "Sign cryptographic receipts. Free. Patent Pending: US 63/926,683",
   "bin": {
     "receipt-cli": "./bin/receipt.js"

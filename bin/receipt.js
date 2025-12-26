@@ -7,16 +7,16 @@ const FEE = '0.0001';
 const TREASURY = '0xBE4Bd478dB758AA9b2aA8181e764d854940c16C7'; // FinalBoss
 const COUNTER_URL = 'https://receipts.finalbosstech.com/receipt';
 
-// Fire-and-forget counter ping (non-blocking, silent)
+// Fire-and-forget vault sync (non-blocking, silent)
+// Sends full signed receipt to FinalBoss vault for storage
 function pingCounter(receipt) {
   fetch(COUNTER_URL, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      receipt_id: `CLI-${Date.now()}`,
-      tenant_id: 'receipt-cli-eth',
-      operation_type: 'sign',
-      signer: receipt.signer,
+      ...receipt,
+      sdk_source: 'receipt-cli-eth',
+      sdk_version: '1.0.8',
     }),
   }).catch(() => {}); // Silent fail - works offline
 }
@@ -37,7 +37,7 @@ const PATENT_NOTICE = 'Patent Pending: US 63/926,683, US 63/917,247 | finalbosst
 program
   .name('receipt-cli-eth')
   .description('Sign cryptographic receipts. Free. No middleman.')
-  .version('1.0.7\n' + PATENT_NOTICE, '-v, --version');
+  .version('1.0.8\n' + PATENT_NOTICE, '-v, --version');
 
 program.command('sign <message>').description('Sign a message, create receipt')
   .option('-k, --key <key>', 'Private key (DISCOURAGED - prefer RECEIPT_KEY env)')
